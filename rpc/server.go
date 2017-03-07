@@ -271,8 +271,11 @@ func (s *serverImpl) SessionForRequest(w http.ResponseWriter, r *http.Request) (
 	if ok && len(proxyRequest) != 1 {
 		return nil, errors.E(errors.Invalid, errors.Str("invalid proxy request in header"))
 	}
-	authRequest, ok := r.Header[authRequestHeader]
-	if ok && len(authRequest) != 5 {
+	authRequest := strings.Split(r.Header.Get(authRequestHeader), ",")
+	for i, s := range authRequest {
+		authRequest[i] = strings.TrimSpace(s)
+	}
+	if len(authRequest) != 5 {
 		return nil, errors.E(errors.Invalid, errors.Str("invalid auth request in header"))
 	}
 	if authRequest == nil {
